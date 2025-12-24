@@ -1,84 +1,64 @@
 -- Hourglass Joker
-SMODS.Sprite:new(
-  "hourglass_joker",
-  SMODS.current_mod.path,
-  "hourglass_placeholder.png", -- temporary
-  71, 95,
-  "asset_atli"
-):register()
+-- src/jokers.lua
+BalatroTime = BalatroTime or {}
+BalatroTime.hourglass_listeners = BalatroTime.hourglass_listeners or {}
 
-local hourglass_def = {
-  name = "Hourglass",
-  text = {
-    "Gains {C:chips}+1{} Chip",
-    "every {C:attention}5{} seconds",
-    "{C:inactive}(since bought){}"
-  }
+-- Helper: register a per-card timer "since bought"
+function BalatroTime.register_hourglass(card)
+  -- store the purchase timestamp in *global clock seconds*
+  -- so it scales properly with speed settings
+  card.ability.balatro_time = card.ability.balatro_time or {}
+  card.ability.balatro_time.bought_at = BalatroTime.clock or 0
+end
+
+-- Helper: compute chips based on elapsed time since bought
+local function hourglass_chips(card)
+  local bt = (card.ability.balatro_time and card.ability.balatro_time.bought_at) or (BalatroTime.clock or 0)
+  local elapsed = math.max(0, (BalatroTime.clock or 0) - bt)
+  -- +1 chip every 5 seconds
+  return math.floor(elapsed / 5)
+end
+
+SMODS.Joker {
+  key = "hourglass",
+  -- TEMP ART: point at a vanilla joker slot in the default joker atlas
+  -- Change these later to your own atlas + pos.
+  atlas = "jokers",
+  pos = { x = 0, y = 0 },
+
+  rarity = 1,               -- Common
+  blueprint_compat = true,
+  cost = 3,
+  discovered = true,
+
+  config = {
+    extra = {
+      -- no static scaling needed; chips are derived from elapsed time
+    }
+  },
+
+  loc_vars = function(self, info_queue, card)
+    -- show current chip value in the text
+    return { vars = { hourglass_chips(card) } }
+  end,
+
+  -- Hook: when the card is added/created, set bought_at
+  -- Steamodded supports "add_to_deck" on Jokers; this is the cleanest.
+  add_to_deck = function(self, card, from_debuff)
+    BalatroTime.register_hourglass(card)
+  end,
+
+  calculate = function(self, card, context)
+    -- Provide chips at scoring time
+    if context.joker_main then
+      local chips = hourglass_chips(card)
+      if chips > 0 then
+        return { chips = chips }
+      end
+    end
+  end,
 }
 
-local hourglass = SMODS.Joker:new(
-  "Hourglass",                 -- name
-  "hourglass",                 -- slug
-  {},                           -- no base ability values
-  { x = 0, y = 0 },             -- atlas position (temp)
-  hourglass_def,
-  1,                            -- rarity (1 = common)
-  5,                            -- cost
-  true,                         -- unlocked
-  false,                        -- discovered
-  true,                         -- blueprint compatible
-  true,                         -- eternal compatible
-  "Chips",
-  "hourglass_joker"
-)
-
-hourglass:register()
-
-
-
-
-function SMODS.Jokers.j_hourglass.init(card)
-  card.ability._time_acc = 0
-  card.ability._chips = 0
-end
-
-function SMODS.Jokers.j_hourglass.calculate(card, context)
-  if context.other_joker and context.other_joker == card then
-    -- only tick if time is actually running
-    if BalatroTime.paused then return end
-    if G.STAGE ~= G.STAGES.RUN then return end
-
-    local dt = context.other_joker_dt or 0
-    local scaled_dt = dt * BalatroTime.speed
-
-    card.ability._time_acc = card.ability._time_acc + scaled_dt
-
-    while card.ability._time_acc >= 5 do
-      card.ability._time_acc = card.ability._time_acc - 5
-      card.ability._chips = card.ability._chips + 1
-      card_eval_status_text(
-        card,
-        'extra',
-        nil,
-        nil,
-        nil,
-        { message = "+1 Chip", colour = G.C.CHIPS }
-      )
-    end
-  end
-
-  -- apply chips when scoring
-  if context.cardarea == G.jokers and not context.before and not context.after then
-    return {
-      chip_mod = card.ability._chips,
-      message = localize{
-        type='variable',
-        key='a_chips',
-        vars={card.ability._chips}
-      }
-    }
-  end
-end
 
 -- Example Jokers below
 

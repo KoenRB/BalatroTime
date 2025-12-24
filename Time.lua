@@ -11,6 +11,8 @@
 
 function SMODS.INIT.BalatroTime()
   BalatroTime.init()
+  
+  assert(SMODS.load_file("localization/en-us.lua"))()
   assert(SMODS.load_file("overrides.lua"))()
   assert(SMODS.load_file("src/jokers.lua"))()
   assert(SMODS.load_file("src/tarots.lua"))()
