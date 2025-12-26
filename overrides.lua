@@ -24,6 +24,52 @@ function BalatroTime.init()
   BalatroTime._acc_5s = 0
   BalatroTime._acc_30s = 0
   BalatroTime._acc_60s = 0
+
+  -- Adding the timer to the HUD
+  if not BalatroTime._patched_hud then
+    BalatroTime._patched_hud = true
+
+    local old_hud = G.UIDEF.HUD
+    function G.UIDEF.HUD(...)
+      local def = old_hud(...)
+
+      -- Add a small top-right overlay row.
+      -- (We avoid touching the left-side nodes entirely.)
+      table.insert(def.nodes, {
+        n = G.UIT.R,
+        config = {align=('cri'), offset = {x=-0.3,y=2.1},major = G.ROOM_ATTACH},
+        nodes = {
+          {
+            n = G.UIT.C,
+            config = { align = "tr", padding = 0.0, offset = { x = -0.4, y = 0.35 } },
+            nodes = { BalatroTime.create_UIBox_Clock() }
+          }
+        }
+      })
+
+      return def
+    end
+  end
+
+end
+
+function BalatroTime.format_time(seconds)
+  local total_seconds = math.floor(seconds or 0)
+  local mins = math.floor(total_seconds / 60)
+  local secs = total_seconds % 60
+  return string.format("%02d:%02d", mins, secs)
+end
+
+
+-- Override Game.start_run
+BalatroTime.Game_start_run_ref = Game.start_run
+function Game:start_run(args)
+  BalatroTime.Game_start_run_ref(self,args)
+  local saveTable = args.savetext or nil
+  Game.clockHUD = UIBox{
+    definition = BalatroTime.create_UIBox_Clock(),
+    config = {align=('cri'), offset = {x=-0.3,y=2.1},major = G.ROOM_ATTACH}
+  }
 end
 
 
@@ -31,9 +77,23 @@ function BalatroTime.update(dt)
   -- only tick during blinds
   if G.STAGE ~= G.STAGES.RUN then return end
   if BalatroTime.paused then return end
+  if G.SETTINGS and G.SETTINGS.paused then return end
+  if G.STATE and G.STATES and (G.STATE ~= G.STATES.SELECTING_HAND)then
+    return
+  end
 
   local scaled_dt = dt * BalatroTime.speed
   BalatroTime.clock = BalatroTime.clock + scaled_dt
+
+  -- debug
+  -- BalatroTime.debug_disp = ""
+  -- BalatroTime._dbg_acc = (BalatroTime._dbg_acc or 0) + dt
+  --   BalatroTime._dbg_acc = 0
+  --   BalatroTime.debug_disp =
+  --     "STAGE: "..tostring(G.STAGE)..
+  --     "\nSTATE: "..tostring(G.STATE)..
+  --     "\ndt: "..string.format("%.3f", dt)..
+  --     "\nG.SETTINGS.paused: "..tostring(G.SETTINGS.paused)
 
   -- update display
   BalatroTime.clock_disp = BalatroTime.format_time(BalatroTime.clock)
@@ -59,3 +119,25 @@ function BalatroTime.update(dt)
   end
 end
 
+
+function BalatroTime.create_UIBox_Clock()
+	return {n=G.UIT.ROOT, config = {align = "cm", padding = 0.03, colour = G.C.UI.TRANSPARENT_DARK, r=0.1}, nodes={
+		{n=G.UIT.R, config = {align = "cm", padding= 0.05, colour = G.C.DYN_UI.MAIN, r=0.1}, nodes={
+			{n=G.UIT.R, config={align = "cm", colour = G.C.DYN_UI.BOSS_DARK, r=0.1, minw = 1.5, padding = 0.08}, nodes={
+				{n=G.UIT.R, config={align = "cm", minh = 0.0}, nodes={}},
+				{n=G.UIT.R, config={id = 'timer_right', align = "cm", padding = 0.05, minw = 1.45, emboss = 0.05, r = 0.1}, nodes={{n=G.UIT.R, config={align = "cm"}, nodes={
+                {n=G.UIT.O, config={object = DynaText({string = {{ref_table = BalatroTime, ref_value = 'clock_disp'}}, colours = {G.C.WHITE}, shadow = true, bump = true, scale = 0.4, pop_in = 0.5, maxw = 5, silent = true}), id = 'timer'}}
+              }},
+        {n=G.UIT.O, config={
+          object = DynaText({
+            string={{ref_table=BalatroTime, ref_value='debug_disp'}},
+            colours={G.C.RED},
+            scale=0.3,
+            silent=true
+          })
+        }}
+				},
+			}}
+		}}
+	}}}
+end

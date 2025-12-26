@@ -23,7 +23,6 @@ SMODS.Joker {
   key = "hourglass",
   -- TEMP ART: point at a vanilla joker slot in the default joker atlas
   -- Change these later to your own atlas + pos.
-  atlas = "jokers",
   pos = { x = 0, y = 0 },
 
   rarity = 1,               -- Common

@@ -1,7 +1,7 @@
 return {
   descriptions = {
     Joker = {
-      hourglass = {
+      j_hourglass = {
         name = "Hourglass",
         text = {
           "Gains {C:chips}+1{} Chips",

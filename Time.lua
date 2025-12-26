@@ -9,11 +9,30 @@
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
+BalatroTime = BalatroTime or {}
+
 function SMODS.INIT.BalatroTime()
-  BalatroTime.init()
   
-  assert(SMODS.load_file("localization/en-us.lua"))()
+  
+  assert(SMODS.load_file("Localization/en-us.lua"))()
+  BalatroTime = BalatroTime or {}
+
+  local function merge_localization(loc)
+    if not loc or not loc.descriptions then return end
+    G.localization.descriptions = G.localization.descriptions or {}
+
+    for set_name, set_tbl in pairs(loc.descriptions) do
+      G.localization.descriptions[set_name] = G.localization.descriptions[set_name] or {}
+      for key, def in pairs(set_tbl) do
+        G.localization.descriptions[set_name][key] = def
+      end
+    end
+  end
+
   assert(SMODS.load_file("overrides.lua"))()
+
+  BalatroTime.init()
+
   assert(SMODS.load_file("src/jokers.lua"))()
   assert(SMODS.load_file("src/tarots.lua"))()
   assert(SMODS.load_file("src/editions.lua"))()
