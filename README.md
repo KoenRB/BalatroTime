@@ -111,16 +111,18 @@ This mod is designed as a **systemic expansion**, not just a Joker pack.
 - Wait
 
 ### Uncommon
-- The Goblin
+- Goblin
 - Extinguisher
 - Robin Hood
-- The Engineer
-- The Fuse
-- The Sundial
+- Engineer
+- Fuse
+- Sundial
+- Supernova
 
 ### Rare
 - Freeze
 - Fertilizer
+- Angel
 
 ### Legendary
 - Chronos
