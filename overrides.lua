@@ -75,6 +75,13 @@ function Game:start_run(args)
   c:add_to_deck()
   G.jokers:emplace(c)
 
+  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_rust', 'rust')
+  c:add_to_deck()
+  G.jokers:emplace(c)
+  
+  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_alarm_clock', 'alarm_clock')
+  c:add_to_deck()
+  G.jokers:emplace(c)
   -- initialize game data clock for persistence
   G.GAME.balatro_time = G.GAME.balatro_time or { clock = 0 }
 end
