@@ -124,6 +124,37 @@ SMODS.Joker {
     end
   end,
 
+  generate_ui = function(self, info_queue, card, desc_nodes, specific_vars, full_UI_table)
+  -- (keep name handling if you want)
+  if not full_UI_table.name then
+    full_UI_table.name = localize({ type = "name", set = self.set, key = self.key, nodes = full_UI_table.name })
+  end
+
+  -- Ensure field exists so ref doesn't hit nil
+  card.ability.time_left = card.ability.time_left or 60
+
+  local time_ui = {
+    { n = G.UIT.T, config = { text = "Time left: ", colour = G.C.UI.TEXT_DARK, scale = 0.32 } },
+    {
+      n = G.UIT.O,
+      config = {
+        object = DynaText({
+          string = { { ref_table = card.ability, ref_value = "time_left" } },
+          colours = { G.C.RED },
+          silent = true,
+          pop_in_rate = 9999999,
+          min_cycle_time = 0,
+          scale = 0.32,
+        }),
+      },
+    },
+    { n = G.UIT.T, config = { text = "s", colour = G.C.UI.TEXT_DARK, scale = 0.32 } },
+  }
+
+  desc_nodes[#desc_nodes + 1] = time_ui
+end,
+
+  
   calculate = function(self, card, context)
     if context.joker_main then
       return { 
