@@ -9,7 +9,8 @@ return {
           "{C:inactive}(since bought){}",
           "Currently: {C:chips}+#1#{} Chips"
         }
-      }
+      },
     }
   }
 }
+

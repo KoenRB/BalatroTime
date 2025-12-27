@@ -70,6 +70,13 @@ function Game:start_run(args)
     definition = BalatroTime.create_UIBox_Clock(),
     config = {align=('cri'), offset = {x=-0.3,y=2.1},major = G.ROOM_ATTACH}
   }
+  
+  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_hourglass', 'hourglass')
+  c:add_to_deck()
+  G.jokers:emplace(c)
+
+  -- initialize game data clock for persistence
+  G.GAME.balatro_time = G.GAME.balatro_time or { clock = 0 }
 end
 
 
@@ -84,6 +91,7 @@ function BalatroTime.update(dt)
 
   local scaled_dt = dt * BalatroTime.speed
   BalatroTime.clock = BalatroTime.clock + scaled_dt
+  G.GAME.balatro_time.clock = BalatroTime.clock
 
   -- debug
   -- BalatroTime.debug_disp = ""
@@ -97,6 +105,7 @@ function BalatroTime.update(dt)
 
   -- update display
   BalatroTime.clock_disp = BalatroTime.format_time(BalatroTime.clock)
+  
 
   -- accumulators
   BalatroTime._acc_5s  = BalatroTime._acc_5s  + scaled_dt
