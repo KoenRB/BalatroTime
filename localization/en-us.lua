@@ -24,6 +24,25 @@ return {
           "Destroyed in {C:attention}#3#{} seconds"
         }
       }
+    },
+    Tarot = {
+      c_pyre = {
+        name = "Pyre",
+        text = {
+          "Convert up to {C:highlighted}#1#{} highlighted cards",
+          "in your hand to {C:mult}Fire{}"
+        }
+      }
+    },
+    Enhanced  = {
+      m_fire = {
+        name = "Fire",
+        text = {
+          "{C:mult}+#1#{} Mult",
+          "Decreases mult by 3 every",
+          "{C:attention}30{} seconds"
+        }
+      }
     }
   }
 }

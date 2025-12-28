@@ -5,7 +5,6 @@
 --- MOD_AUTHOR: [Koenrb]
 --- MOD_DESCRIPTION: Adds time as a resource to the game, used for various time-based mechanics.
 --- BADGE_COLOUR: #FFD700
---- PREFIX: TIME
 --- PRIORITY: -100
 ----------------------------------------------
 ------------MOD CODE -------------------------
@@ -35,6 +34,7 @@ function SMODS.INIT.BalatroTime()
   BalatroTime.init()
 
   assert(SMODS.load_file("src/tarots.lua"))()
+  assert(SMODS.load_file("src/enhancements.lua"))()
   assert(SMODS.load_file("src/editions.lua"))()
   assert(SMODS.load_file("src/seals.lua"))()
   assert(SMODS.load_file("src/vouchers.lua"))()

@@ -71,6 +71,8 @@ function Game:start_run(args)
     config = {align=('cri'), offset = {x=-0.3,y=2.1},major = G.ROOM_ATTACH}
   }
   
+-- Testing cards
+
   local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_hourglass', 'hourglass')
   c:add_to_deck()
   G.jokers:emplace(c)
@@ -78,10 +80,14 @@ function Game:start_run(args)
   local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_rust', 'rust')
   c:add_to_deck()
   G.jokers:emplace(c)
-  
+
   local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_alarm_clock', 'alarm_clock')
   c:add_to_deck()
   G.jokers:emplace(c)
+
+  -- add a pyre tarot to the deck
+  SMODS.add_card({key ='c_pyre'})
+
   -- initialize game data clock for persistence
   G.GAME.balatro_time = G.GAME.balatro_time or { clock = 0 }
 end
@@ -100,24 +106,20 @@ function BalatroTime.update(dt)
   BalatroTime.clock = BalatroTime.clock + scaled_dt
   G.GAME.balatro_time.clock = BalatroTime.clock
 
-  -- debug
-  -- BalatroTime.debug_disp = ""
-  -- BalatroTime._dbg_acc = (BalatroTime._dbg_acc or 0) + dt
-  --   BalatroTime._dbg_acc = 0
-  --   BalatroTime.debug_disp =
-  --     "STAGE: "..tostring(G.STAGE)..
-  --     "\nSTATE: "..tostring(G.STATE)..
-  --     "\ndt: "..string.format("%.3f", dt)..
-  --     "\nG.SETTINGS.paused: "..tostring(G.SETTINGS.paused)
-
   -- update display
   BalatroTime.clock_disp = BalatroTime.format_time(BalatroTime.clock)
   
 
   -- accumulators
+  BalatroTime._acc_1s  = (BalatroTime._acc_1s or 0)  + scaled_dt
   BalatroTime._acc_5s  = BalatroTime._acc_5s  + scaled_dt
   BalatroTime._acc_30s = BalatroTime._acc_30s + scaled_dt
   BalatroTime._acc_60s = BalatroTime._acc_60s + scaled_dt
+
+  if BalatroTime._acc_1s >= 1 then
+    BalatroTime._acc_1s = BalatroTime._acc_1s - 1
+    -- trigger 1s effects
+  end
 
   if BalatroTime._acc_5s >= 5 then
     BalatroTime._acc_5s = BalatroTime._acc_5s - 5
@@ -144,14 +146,14 @@ function BalatroTime.create_UIBox_Clock()
 				{n=G.UIT.R, config={id = 'timer_right', align = "cm", padding = 0.05, minw = 1.45, emboss = 0.05, r = 0.1}, nodes={{n=G.UIT.R, config={align = "cm"}, nodes={
                 {n=G.UIT.O, config={object = DynaText({string = {{ref_table = BalatroTime, ref_value = 'clock_disp'}}, colours = {G.C.WHITE}, shadow = true, bump = true, scale = 0.4, pop_in = 0.5, maxw = 5, silent = true}), id = 'timer'}}
               }},
-        {n=G.UIT.O, config={
-          object = DynaText({
-            string={{ref_table=BalatroTime, ref_value='debug_disp'}},
-            colours={G.C.RED},
-            scale=0.3,
-            silent=true
-          })
-        }}
+        -- {n=G.UIT.O, config={
+        --   object = DynaText({
+        --     string={{ref_table=BalatroTime, ref_value='debug_disp'}},
+        --     colours={G.C.RED},
+        --     scale=0.3,
+        --     silent=true
+        --   })
+        -- }}
 				},
 			}}
 		}}
