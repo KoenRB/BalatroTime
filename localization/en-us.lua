@@ -23,6 +23,20 @@ return {
           "{C:chips}+#1#{} chips and {C:mult}+#2#{} mult",
           "Destroyed in {C:attention}#3#{} seconds"
         }
+      },
+      j_freeze = {
+        name = "Freeze",
+        text = {
+          "Gives the ability to pause time"
+        }
+      },
+      j_engineer = {
+        name = "Engineer",
+        text = {
+          "When sold or destroyed",
+          "the {C:voucher}#1#{} voucher",
+          "is added to the shop"
+        }
       }
     },
     Tarot = {
@@ -41,6 +55,20 @@ return {
           "{C:mult}+#1#{} Mult",
           "Decreases mult by 3 every",
           "{C:attention}30{} seconds"
+        }
+      }
+    },
+    Voucher = {
+      v_hypersonic = {
+        name = "Hypersonic",
+        text = {
+          "Adds {C:attention}#1#{} speed options"
+        }
+        },
+      v_lightspeed = {
+        name = "Lightspeed",
+        text = {
+          "Adds {C:attention}#1#{} speed options"
         }
       }
     }

@@ -174,3 +174,56 @@ SMODS.Joker {
     end
   end
 }
+
+-- Freeze Joker
+SMODS.Joker {
+  key="freeze",
+  pos={x=0,y=0},
+  rarity=3,
+  cost = 6,
+  blueprint_compat=false,
+  discovered=true,
+  config = { extra = { } },
+  loc_vars = function(self, info_queue, card)
+    return { vars = {  } }
+  end,
+  add_to_deck = function(self, card, from_debuff)
+    BalatroTime.pause_available = true
+  end,
+  remove_from_deck = function(self, card, to_debuff)
+    BalatroTime.pause_available = false
+    BalatroTime.paused = false
+    BalatroTime.paused_text = "|>"
+  end
+}
+
+-- Engineer Joker
+SMODS.Joker {    
+  key="engineer",    
+  pos={x=0,y=0},    
+  rarity=2,    
+  cost = 6,    
+  blueprint_compat=false,    
+  discovered=true,    
+  config = { extra = { next_voucher = "v_hypersonic" } },    
+  loc_vars = function(self, info_queue, card)    
+    return { vars = { card.ability.extra.next_voucher } }    
+  end,
+  add_to_deck = function(self, card, from_debuff)
+    if G.GAME.used_vouchers["v_hypersonic"] then  
+      card.ability.extra.next_voucher = "v_lightspeed"  
+    end
+  end,
+  remove_from_deck = function(self, card, from_debuff)    
+    -- Check which voucher to add based on what's owned  
+    local voucher_to_add = "v_hypersonic"  
+    if G.GAME.used_vouchers["v_hypersonic"] then  
+      voucher_to_add = "v_lightspeed"  
+    end  
+      
+    -- Add voucher to next shop queue    
+    G.GAME.current_round.voucher = G.GAME.current_round.voucher or {spawn = {}}    
+    G.GAME.current_round.voucher[#G.GAME.current_round.voucher + 1] = voucher_to_add    
+    G.GAME.current_round.voucher.spawn[voucher_to_add] = true    
+  end   
+}

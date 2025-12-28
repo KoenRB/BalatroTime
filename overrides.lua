@@ -17,7 +17,12 @@ end
 function BalatroTime.init()
   BalatroTime.clock = 0
   BalatroTime.speed = 1
+  BalatroTime.speed_options = { 1 }
+  BalatroTime.speed_text = "1x"
+  BalatroTime.pause_available = false
   BalatroTime.paused = false
+  BalatroTime.paused_text = "|>"
+
   BalatroTime.clock_disp = "00:00"
 
   -- accumulators for minute/second triggers
@@ -25,32 +30,33 @@ function BalatroTime.init()
   BalatroTime._acc_30s = 0
   BalatroTime._acc_60s = 0
 
-  -- Adding the timer to the HUD
-  if not BalatroTime._patched_hud then
-    BalatroTime._patched_hud = true
-
-    local old_hud = G.UIDEF.HUD
-    function G.UIDEF.HUD(...)
-      local def = old_hud(...)
-
-      -- Add a small top-right overlay row.
-      -- (We avoid touching the left-side nodes entirely.)
-      table.insert(def.nodes, {
-        n = G.UIT.R,
-        config = {align=('cri'), offset = {x=-0.3,y=2.1},major = G.ROOM_ATTACH},
-        nodes = {
-          {
-            n = G.UIT.C,
-            config = { align = "tr", padding = 0.0, offset = { x = -0.4, y = 0.35 } },
-            nodes = { BalatroTime.create_UIBox_Clock() }
-          }
-        }
-      })
-
-      return def
+  -- Functions for buttons
+  G.FUNCS.pause_time = function()
+    if not BalatroTime.pause_available then return end
+    BalatroTime.paused = not BalatroTime.paused
+    if BalatroTime.paused then
+      BalatroTime.paused_text = "||"
+    else
+      BalatroTime.paused_text = "|>"
     end
   end
 
+  G.FUNCS.update_speed = function()
+    -- go to the next speed option
+    local current_index = 1
+    for i, v in ipairs(BalatroTime.speed_options) do
+      if v == BalatroTime.speed then
+        current_index = i
+        break
+      end
+    end
+    local next_index = current_index + 1
+    if next_index > #BalatroTime.speed_options then
+      next_index = 1
+    end
+    BalatroTime.speed = BalatroTime.speed_options[next_index]
+    BalatroTime.speed_text = tostring(BalatroTime.speed) .. "x"
+  end
 end
 
 function BalatroTime.format_time(seconds)
@@ -68,8 +74,9 @@ function Game:start_run(args)
   local saveTable = args.savetext or nil
   Game.clockHUD = UIBox{
     definition = BalatroTime.create_UIBox_Clock(),
-    config = {align=('cri'), offset = {x=-0.3,y=2.1},major = G.ROOM_ATTACH}
+    config = {align=('cri'), offset = {x=-0.3,y=-0.5},major = G.ROOM_ATTACH}
   }
+  
   
 -- Testing cards
 
@@ -82,6 +89,17 @@ function Game:start_run(args)
   G.jokers:emplace(c)
 
   local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_alarm_clock', 'alarm_clock')
+  c:add_to_deck()
+  G.jokers:emplace(c)
+
+  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_freeze', 'freeze')
+  c:add_to_deck()
+  G.jokers:emplace(c)
+
+  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_engineer', 'engineer')
+  c:add_to_deck()
+  G.jokers:emplace(c)
+  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_engineer', 'engineer')
   c:add_to_deck()
   G.jokers:emplace(c)
 
@@ -139,23 +157,71 @@ end
 
 
 function BalatroTime.create_UIBox_Clock()
-	return {n=G.UIT.ROOT, config = {align = "cm", padding = 0.03, colour = G.C.UI.TRANSPARENT_DARK, r=0.1}, nodes={
-		{n=G.UIT.R, config = {align = "cm", padding= 0.05, colour = G.C.DYN_UI.MAIN, r=0.1}, nodes={
+	return {n=G.UIT.ROOT, config = {align = "cm", padding = 0.03, colour = G.C.UI.TRANSPARENT_DARK, r=0.1, minw = 3}, nodes={
+		{n=G.UIT.R, config = {align = "cm", padding= 0.05, colour = G.C.DYN_UI.MAIN, r=0.1, minw = 3}, nodes={
 			{n=G.UIT.R, config={align = "cm", colour = G.C.DYN_UI.BOSS_DARK, r=0.1, minw = 1.5, padding = 0.08}, nodes={
 				{n=G.UIT.R, config={align = "cm", minh = 0.0}, nodes={}},
-				{n=G.UIT.R, config={id = 'timer_right', align = "cm", padding = 0.05, minw = 1.45, emboss = 0.05, r = 0.1}, nodes={{n=G.UIT.R, config={align = "cm"}, nodes={
+				{n=G.UIT.C, config={id = 'timer_right', align = "cm", padding = 0.05, minw = 1.45, emboss = 0.05, r = 0.1}, nodes={
+          {n=G.UIT.R, config={align = "cm"}, nodes={
+              -- Shows the time buttons available: 
+              -- pause on the left(non-toggleable until BalatroTime.paused is true)
+              -- speed, moves through the options in BalatroTime.speed_options on the right (<value>x)
+              {
+                n = G.UIT.C,
+                config = {
+                  align = "cm",
+                  minw = 1.5,
+                  padding = 0.1,
+                  r = 0.1,
+                  colour = G.C.DYN_UI.BOSS_DARK,
+                  button = "pause_time",
+                  hover = true,
+                  shadow = true
+                },
+                nodes = {
+                  {
+                    n = G.UIT.T,
+                    config = {
+                      ref_table = BalatroTime,
+                      ref_value = "paused_text",
+                      scale = 0.5,
+                      colour = G.C.UI.TEXT_LIGHT
+                    }
+                  }
+                }
+              },
+              {  
+                n = G.UIT.C,  
+                config = {  
+                    align = "cm",  
+                    minw = 1.5,  
+                    padding = 0.1,  
+                    r = 0.1,  
+                    colour = G.C.DYN_UI.BOSS_DARK,  
+                    button = "update_speed",  
+                    hover = true,  
+                    shadow = true  
+                },  
+                nodes = {  
+                    {  
+                        n = G.UIT.T,  
+                        config = {  
+                            ref_table = BalatroTime,  
+                            ref_value = "speed_text",  
+                            scale = 0.5,  
+                            colour = G.C.UI.TEXT_LIGHT  
+                        }  
+                    }  
+                }  
+              }  
+            }},
+            {n=G.UIT.R, config={align = "cm"}, nodes={
                 {n=G.UIT.O, config={object = DynaText({string = {{ref_table = BalatroTime, ref_value = 'clock_disp'}}, colours = {G.C.WHITE}, shadow = true, bump = true, scale = 0.4, pop_in = 0.5, maxw = 5, silent = true}), id = 'timer'}}
-              }},
-        -- {n=G.UIT.O, config={
-        --   object = DynaText({
-        --     string={{ref_table=BalatroTime, ref_value='debug_disp'}},
-        --     colours={G.C.RED},
-        --     scale=0.3,
-        --     silent=true
-        --   })
-        -- }}
-				},
+            }
+          },
+          }},
+				}
 			}}
 		}}
-	}}}
+	}
 end
