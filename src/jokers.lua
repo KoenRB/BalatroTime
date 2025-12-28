@@ -4,7 +4,8 @@
 
 
 BalatroTime = BalatroTime or {}
-BalatroTime.hourglass_listeners = BalatroTime.hourglass_listeners or {}
+
+---- Common Jokers
 
 -- Hourglass Joker
 
@@ -175,27 +176,14 @@ SMODS.Joker {
   end
 }
 
--- Freeze Joker
-SMODS.Joker {
-  key="freeze",
-  pos={x=0,y=0},
-  rarity=3,
-  cost = 6,
-  blueprint_compat=false,
-  discovered=true,
-  config = { extra = { } },
-  loc_vars = function(self, info_queue, card)
-    return { vars = {  } }
-  end,
-  add_to_deck = function(self, card, from_debuff)
-    BalatroTime.pause_available = true
-  end,
-  remove_from_deck = function(self, card, to_debuff)
-    BalatroTime.pause_available = false
-    BalatroTime.paused = false
-    BalatroTime.paused_text = "|>"
-  end
-}
+---- Uncommon Jokers
+-- Extinguisher: stops fire enhancement decay while in deck
+
+-- Robin Hood Joker: moves x% of chips to mult, scales by 1% per 10sec in round
+
+-- Fuse Joker: adds fire enhancement to 5 random cards in hand in 3min, destroys itself after
+-- Sundial Joker: retriggers cards with the rank equal to the leading digit of the current time twice upon scoring
+-- Supernova Joker: if time is less than 15 seconds, fills consumable slots with planet cards for played hand
 
 -- Engineer Joker
 SMODS.Joker {    
@@ -227,3 +215,33 @@ SMODS.Joker {
     G.GAME.current_round.voucher.spawn[voucher_to_add] = true    
   end   
 }
+
+---- Rare Jokers
+-- Fertilizer Joker: raises interest cap by 1 for every minute played this run
+-- Angel Joker: if the current time contains 3 3s, create a prendulum spectral card
+
+-- Freeze Joker
+SMODS.Joker {
+  key="freeze",
+  pos={x=0,y=0},
+  rarity=3,
+  cost = 6,
+  blueprint_compat=false,
+  discovered=true,
+  config = { extra = { } },
+  loc_vars = function(self, info_queue, card)
+    return { vars = {  } }
+  end,
+  add_to_deck = function(self, card, from_debuff)
+    BalatroTime.pause_available = true
+  end,
+  remove_from_deck = function(self, card, to_debuff)
+    BalatroTime.pause_available = false
+    BalatroTime.paused = false
+    BalatroTime.paused_text = "|>"
+  end
+}
+
+-- Legendary Jokers
+
+-- Chronos Joker: scales by 0.1 xmult per minute from being bought, adds blessed sticker to the joker on its right

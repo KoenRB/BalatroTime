@@ -14,6 +14,35 @@ end
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
+local function add_mod_cards_to_deck()
+  -- For testing purposes, add one of each mod card to the deck at start of run
+  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_hourglass', 'hourglass')
+  c:add_to_deck()
+  G.jokers:emplace(c)
+
+  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_rust', 'rust')
+  c:add_to_deck()
+  G.jokers:emplace(c)
+
+  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_alarm_clock', 'alarm_clock')
+  c:add_to_deck()
+  G.jokers:emplace(c)
+
+  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_freeze', 'freeze')
+  c:add_to_deck()
+  G.jokers:emplace(c)
+
+  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_engineer', 'engineer')
+  c:add_to_deck()
+  G.jokers:emplace(c)
+  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_engineer', 'engineer')
+  c:add_to_deck()
+  G.jokers:emplace(c)
+
+  -- add a pyre tarot to the deck
+  SMODS.add_card({key ='c_pyre'})
+end
+
 function BalatroTime.init()
   BalatroTime.clock = 0
   BalatroTime.speed = 1
@@ -69,9 +98,17 @@ end
 
 -- Override Game.start_run
 BalatroTime.Game_start_run_ref = Game.start_run
-function Game:start_run(args)
-  BalatroTime.Game_start_run_ref(self,args)
-  local saveTable = args.savetext or nil
+function Game:start_run(args)  
+  BalatroTime.Game_start_run_ref(self,args)  
+  local saveTable = args.savetext or nil  
+    
+  -- Only reset clock for new runs (no saveTable)  
+  if not saveTable then  
+    BalatroTime.clock = 0  
+  elseif saveTable.balatro_time and saveTable.balatro_time.clock then  
+    -- Restore clock from save  
+    BalatroTime.clock = saveTable.balatro_time.clock  
+  end  
   Game.clockHUD = UIBox{
     definition = BalatroTime.create_UIBox_Clock(),
     config = {align=('cri'), offset = {x=-0.3,y=-0.5},major = G.ROOM_ATTACH}
@@ -80,31 +117,7 @@ function Game:start_run(args)
   
 -- Testing cards
 
-  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_hourglass', 'hourglass')
-  c:add_to_deck()
-  G.jokers:emplace(c)
-
-  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_rust', 'rust')
-  c:add_to_deck()
-  G.jokers:emplace(c)
-
-  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_alarm_clock', 'alarm_clock')
-  c:add_to_deck()
-  G.jokers:emplace(c)
-
-  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_freeze', 'freeze')
-  c:add_to_deck()
-  G.jokers:emplace(c)
-
-  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_engineer', 'engineer')
-  c:add_to_deck()
-  G.jokers:emplace(c)
-  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_engineer', 'engineer')
-  c:add_to_deck()
-  G.jokers:emplace(c)
-
-  -- add a pyre tarot to the deck
-  SMODS.add_card({key ='c_pyre'})
+  -- add_mod_cards_to_deck()
 
   -- initialize game data clock for persistence
   G.GAME.balatro_time = G.GAME.balatro_time or { clock = 0 }

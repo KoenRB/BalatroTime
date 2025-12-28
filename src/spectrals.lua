@@ -1,0 +1,1 @@
+-- Pendulum Spectral: select 2 cards, they get a green or pink seal at random
