@@ -82,7 +82,7 @@ This mod is designed as a **systemic expansion**, not just a Joker pack.
 
 ## 🧷 Seals
 
-### Travel
+### Green Seal
 - On scoring: **+5 seconds** to the clock
 
 ### Pink Seal
