@@ -32,13 +32,13 @@ function SMODS.INIT.BalatroTime()
   assert(SMODS.load_file("overrides.lua"))()
   assert(SMODS.load_file("src/jokers.lua"))()
   assert(SMODS.load_file("src/vouchers.lua"))()
-  BalatroTime.init()
-
   assert(SMODS.load_file("src/tarots.lua"))()
   assert(SMODS.load_file("src/enhancements.lua"))()
   assert(SMODS.load_file("src/editions.lua"))()
   assert(SMODS.load_file("src/seals.lua"))()
-
   assert(SMODS.load_file("src/spectrals.lua"))()
+  assert(SMODS.load_file("src/decks.lua"))()
   assert(SMODS.load_file("src/challenges.lua"))()
+
+  BalatroTime.init()
 end

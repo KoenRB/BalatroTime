@@ -39,8 +39,9 @@ local function add_mod_cards_to_deck()
   c:add_to_deck()
   G.jokers:emplace(c)
 
-  -- add a pyre tarot to the deck
+  -- add consumables to the deck
   SMODS.add_card({key ='c_pyre'})
+  SMODS.add_card({key ='c_pendulum'})
 end
 
 function BalatroTime.init()
@@ -125,47 +126,22 @@ end
 
 
 function BalatroTime.update(dt)
-  -- only tick during blinds
-  if G.STAGE ~= G.STAGES.RUN then return end
-  if BalatroTime.paused then return end
-  if G.SETTINGS and G.SETTINGS.paused then return end
-  if G.STATE and G.STATES and (G.STATE ~= G.STATES.SELECTING_HAND)then
-    return
-  end
-
-  local scaled_dt = dt * BalatroTime.speed
-  BalatroTime.clock = BalatroTime.clock + scaled_dt
-  G.GAME.balatro_time.clock = BalatroTime.clock
-
+  -- Always update display (remove all the early returns)  
+  if G.STAGE ~= G.STAGES.RUN then return end  
+  
   -- update display
   BalatroTime.clock_disp = BalatroTime.format_time(BalatroTime.clock)
   
-
-  -- accumulators
-  BalatroTime._acc_1s  = (BalatroTime._acc_1s or 0)  + scaled_dt
-  BalatroTime._acc_5s  = BalatroTime._acc_5s  + scaled_dt
-  BalatroTime._acc_30s = BalatroTime._acc_30s + scaled_dt
-  BalatroTime._acc_60s = BalatroTime._acc_60s + scaled_dt
-
-  if BalatroTime._acc_1s >= 1 then
-    BalatroTime._acc_1s = BalatroTime._acc_1s - 1
-    -- trigger 1s effects
-  end
-
-  if BalatroTime._acc_5s >= 5 then
-    BalatroTime._acc_5s = BalatroTime._acc_5s - 5
-    -- trigger 5s effects
-  end
-
-  if BalatroTime._acc_30s >= 30 then
-    BalatroTime._acc_30s = BalatroTime._acc_30s - 30
-    -- trigger 30s effects
-  end
-
-  if BalatroTime._acc_60s >= 60 then
-    BalatroTime._acc_60s = BalatroTime._acc_60s - 60
-    -- trigger 1-minute effects
-  end
+  -- Only increment time when conditions are met  
+  if not BalatroTime.paused   
+    and not (G.SETTINGS and G.SETTINGS.paused)   
+    and G.STATE and G.STATES   
+    and (G.STATE == G.STATES.SELECTING_HAND) then  
+        -- Increment time here  
+        local scaled_dt = dt * BalatroTime.speed
+        BalatroTime.clock = BalatroTime.clock + scaled_dt
+        G.GAME.balatro_time.clock = BalatroTime.clock
+    end
 end
 
 

@@ -71,7 +71,42 @@ return {
           "Adds {C:attention}#1#{} speed options"
         }
       }
+    },
+    Spectral = {
+      c_pendulum = {
+        name = "Pendulum",
+        text = {
+          "Select 2 cards, ",
+          "they randomly get a",
+          "{G.C.green}Green Seal{} or {HEX(FF69B4)}Pink Seal{}}"
+        }
+
+      }
+
+    },
+    Other = {
+      green_seal = {
+        name = "Green Seal",
+        text = {
+          "Rewinds time by {C:attention}5sec{}",
+          "on a scoring trigger"
+        }
+      },
+      pink_seal = {
+        name = "Pink Seal",
+        text = {
+          "Changes Rank of card",
+          "to the leading digit",
+          "on the global timer"
+        }
+      }
     }
-  }
+  },
+  misc = {  
+    labels = {  
+        ["pink_seal"] = "Pink Seal" ,
+        ["green_seal"] = "Green Seal"
+    }  
+  }  
 }
 
