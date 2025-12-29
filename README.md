@@ -1,4 +1,4 @@
-# ⏱️ Time / Clock Mod for Balatro
+# ⏱️ Balatro Time
 
 ## Overview
 This mod introduces **time as a first-class resource** in Balatro.
@@ -50,33 +50,34 @@ This mod is designed as a **systemic expansion**, not just a Joker pack.
 
 ---
 
-## 🔥 Burning System
+## 🔥 Fire System
 
-### Burning Enhancement
-- Burning cards gain **+2 Mult per minute**
+### Fire Enhancement
+- Fire cards start at **+15 mult**
+- Fire cards lose **3 Mult per 30sec**
 - After **5 minutes**, the card is destroyed
 - Countdown pauses when time is paused
 
 ### Tarot: The Pyre
-- Apply Burning to **2 selected cards**
+- Apply Fire to **2 selected cards**
 
----
+<!-- ---
 
 ## 🔀 Shuffle Edition
 - Cards keep the Shuffle edition
 - Every **3 minutes** on the global clock, all Shuffle cards reshuffle their modifier
 
----
+--- -->
 
 ## 🧷 Stickers
 
-### Travelback
-- On scoring: **–5 seconds** from the clock
+<!-- ### Green
+- On scoring: **–5 seconds** from the clock -->
 
 ### Blessed
 - Gains **+0.1 XMult per minute**
 - Caps at **5×**
-- Ordered left → right by increasing value
+- Blessed jokers are ordered left → right by increasing value
 
 ---
 
@@ -97,51 +98,146 @@ This mod is designed as a **systemic expansion**, not just a Joker pack.
 ## 🔮 Spectral Cards
 
 ### Pendulum
-- Applies a **random Pink or Travelback seal** to a selected card
+- Applies a **random Pink or Green seal** to up to 2 selected cards
 
 ---
 
 ## 🃏 Jokers
 
 ### Common
-- Hourglass
-- Rust
-- Alarm Clock
-- I’m On Fire
-- Wait
+- <details>
+  <summary>Hourglass</summary>
+
+  - +1 chip every 5 seconds  
+  - Respects game speed  
+  - Resets on sell
+  </details>
+
+- <details>
+  <summary>Rust</summary>
+
+  - +15 Mult
+  - reduced by 3 every 30 sec
+  </details>
+
+- <details>
+  <summary>Alarm Clock</summary>
+  
+  - +40 chips + 5 mult
+  - destroyed after 1min
+  </details>
+
+- <details>
+  <summary>I’m On Fire</summary>
+  
+  - Adds the Fire modifier to all cards in hand
+  - Triggers 3min after buying
+  </details>
+
+- <details>
+  <summary>Wait</summary>
+
+  - -30sec on trigger
+  </details>
 
 ### Uncommon
-- Goblin
-- Extinguisher
-- Robin Hood
-- Engineer
-- Fuse
-- Sundial
-- Supernova
+- <details>
+  <summary>Goblin</summary>
+
+  - Stores 1$ every 15 sec in round
+  - Capped at 10$
+  - resets at end of round
+  </details>
+
+- <details>
+  <summary>Extinguisher</summary>
+  
+  - Stops all Fire cards from burning
+  </details>
+
+- <details>
+  <summary>Robin Hood</summary>
+
+  - adds 1% to value on joker every 5sec
+  - transfers value% of chips to mult
+  - resets on trigger
+  - max 50%
+  </details>
+
+- <details>
+  <summary>Engineer</summary>
+
+  - adds hypersonic/lightspeed voucher to next shop upon selling
+  </details>
+
+- <details>
+  <summary>Fuse</summary>
+
+  - destroys 5 random cards in hand after 2min
+  </details>
+
+- <details>
+  <summary>Sundial</summary>
+
+  - retriggers cards with rank equal to the leading digit in the clock twice
+  </details>
+
+
+- <details>
+  <summary>Supernova</summary>
+  
+  - if time on clock is less than 15 sec
+  - fills consumable slots with planet card for played hand
+  </details>
 
 ### Rare
-- Freeze
-- Fertilizer
-- Angel
+- <details>
+  <summary>Freeze</summary>
+
+  - allows the player to pauze time
+  </details>
+
+- <details>
+  <summary>Fertilizer</summary>
+
+  - increases interest cap by 1 for every 3min on global clock
+  </details>
+
+- <details>
+  <summary>Angel</summary>
+
+  - if the global clock contains 3 3s,
+  - add a pendulum card to consumable slots
+  - if theres place
 
 ### Legendary
-- Chronos
+- <details>
+  <summary>Chronos</summary>
+
+  - scales by 0.1 every 30sec
+  - adds Blessed sticker to the joker on its right once every minute
+  </details>
 
 ---
 
 ## 🂠 Decks
 - Pendulum Deck
-- Chronos Deck
 - Cinder Deck
 
 ---
 
 ## 🏁 Challenge
-**Against the Clock**
-- Beat Ante 8 before the clock hits **10:00**
-- Instant loss when time runs out
+**Chronos Blessed**
+- Beat Ante 8
+- 2 hands, 1 consumable slot, 4 joker slots
+- start with eternal Chronos
+
+**Pressure**
+- Beat Ante 8
+- No Modifiers
+- Lose if timer goes beyond 5min
 
 ---
 
 ## Status
-Design complete. Implementation next.
+Implementation near-complete, Art Needed
