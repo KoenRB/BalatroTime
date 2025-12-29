@@ -96,6 +96,33 @@ function BalatroTime.format_time(seconds)
   return string.format("%02d:%02d", mins, secs)
 end
 
+-- Override Align cards for blessed sticker
+local align_cards_ref = CardArea.align_cards  
+function CardArea:align_cards()  
+    if self == G.jokers then  
+        -- Custom sorting for jokers with blessed stickers  
+        table.sort(self.cards, function(a, b)  
+            -- Check if both cards have blessed stickers  
+            local a_blessed = a.ability.blessed  
+            local b_blessed = b.ability.blessed  
+              
+            if a_blessed and b_blessed then  
+                local a_xmult = a_blessed.xmult or 0  
+                local b_xmult = b_blessed.xmult or 0  
+                if a_xmult ~= b_xmult then  
+                    return a_xmult < b_xmult  -- Lower xmult first (left side)  
+                end  
+            end  
+              
+            -- Default positioning  
+            return a.T.x + a.T.w/2 < b.T.x + b.T.w/2  
+        end)  
+    end  
+      
+    -- Call original function  
+    align_cards_ref(self)  
+end
+
 
 -- Override Game.start_run
 BalatroTime.Game_start_run_ref = Game.start_run

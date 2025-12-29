@@ -245,3 +245,55 @@ SMODS.Joker {
 -- Legendary Jokers
 
 -- Chronos Joker: scales by 0.1 xmult per minute from being bought, adds blessed sticker to the joker on its right
+SMODS.Joker {  
+  key = "chronos",  
+  pos = {x=0,y=0},  
+  rarity=4,  
+  cost = 20,  
+  blueprint_compat = true,  
+  discovered = false,  
+  config = {extra = {xmult = 1.0, scaling = 0.1, scaling_time = 30, bought_at = 0, blessing_cd = 60, last_blessing = 0}},  
+  loc_vars = function(self, info_queue, card)  
+    return { vars = {card.ability.extra.xmult, card.ability.extra.scaling, card.ability.extra.scaling_time}}  
+  end,  
+  add_to_deck = function(self, card, from_debuff)  
+    card.ability.extra.bought_at = BalatroTime.clock  
+    card.ability.extra.last_blessing = BalatroTime.clock  
+  end,  
+  update = function(self, card, dt)  
+    local now = (BalatroTime and BalatroTime.clock) or 0  
+    local bought_at = card.ability.extra.bought_at or 0  
+    local elapsed = now - bought_at  
+  
+    -- Self scaling: update xmult based on elapsed time  
+    local new_xmult = 1 + math.floor(elapsed / card.ability.extra.scaling_time) * card.ability.extra.scaling  
+    if new_xmult ~= card.ability.extra.xmult then  
+      card.ability.extra.xmult = new_xmult  
+    end  
+  
+    -- Blessing logic: add Blessed Sticker to joker on right every 60 seconds  
+    if now - card.ability.extra.last_blessing >= card.ability.extra.blessing_cd then  
+      local joker_pos = nil  
+      for i, joker in ipairs(G.jokers.cards) do  
+        if joker == card then  
+          joker_pos = i  
+          break  
+        end  
+      end  
+        
+      if joker_pos and joker_pos < #G.jokers.cards then  
+        local right_joker = G.jokers.cards[joker_pos + 1]  
+        if right_joker and not right_joker.ability.blessed then  
+          right_joker:add_sticker("blessed")  
+          card.ability.extra.last_blessing = now  
+          card_eval_status_text(card, 'extra', nil, nil, nil, {message = "Blessed!", colour = G.C.PURPLE})  
+        end  
+      end  
+    end  
+  end,  
+  calculate = function(self, card, context)  
+    if context.joker_main then  
+      return {Xmult = card.ability.extra.xmult}  
+    end  
+  end  
+}

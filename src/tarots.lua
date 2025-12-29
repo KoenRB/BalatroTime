@@ -1,5 +1,3 @@
-
-
 -- The Pyre
 SMODS.Consumable {
     -- creates a tarot that adds the fire enhancement to 2 selected cards

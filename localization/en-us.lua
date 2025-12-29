@@ -1,5 +1,15 @@
 return {
   descriptions = {
+    Back = {  
+      b_pendulum = {  
+        name = "Pendulum Deck",  
+        text = {  
+          "Start with {C:attention}2{} Pendulum Spectrals",  
+          "Start with {C:attention}Hypersonic{} and",  
+          "{C:attention}Crystal Ball{} vouchers"  
+        }  
+      }  
+    },  
     Joker = {
       j_hourglass = {
         name = "Hourglass",
@@ -37,7 +47,17 @@ return {
           "the {C:voucher}#1#{} voucher",
           "is added to the shop"
         }
-      }
+      },
+      j_chronos = {  
+        name = "Chronos",  
+        text = {  
+          "{X:mult,C:white}X#1#{} Mult",  
+          "Gains {C:mult}#2#{} Mult every",  
+          "{C:attention}#3#{} seconds",  
+          "Blesses joker to the right",  
+          "every {C:attention}60{} seconds"  
+        }        
+      }  
     },
     Tarot = {
       c_pyre = {
@@ -82,7 +102,17 @@ return {
         }
 
       }
-
+    },
+    Stake = {  
+      stake_blessed = {  
+        name = "Blessed Stake",  
+        text = {  
+          "Shop can have {C:attention}Blessed{} Jokers",
+          "{C:inactive,s:0.8}(Scales by 0.1 per minute)",
+          "{C:inactive,s:0.8}(Cannot be to the left of a blessed sticker with higher Xmult)",
+          "{s:0.8}Applies all previous Stakes"
+        }
+      } 
     },
     Other = {
       green_seal = {
@@ -99,10 +129,28 @@ return {
           "to the leading digit",
           "on the global timer"
         }
+      },
+      blessed = {
+        name = "Blessed",
+        text = {
+          "Card is {HEX(ADD8E6)}Blessed{}",
+          "{C:mult}#1#x{}, gains 0.1 per min",
+          "{C:inactive}capped at 5x{}"
+        }
       }
     }
   },
   misc = {  
+    challenge_names = {
+      ["chronos_blessed"] = {  
+        name = "Chronos's Blessing",  
+        text = {  
+           "Start with an eternal Chronos",  
+            "Only {C:attention}4{} Joker slots",  
+            "Only {C:attention}1{} Consumable slot"  
+        }  
+      } 
+    },
     labels = {  
         ["pink_seal"] = "Pink Seal" ,
         ["green_seal"] = "Green Seal"
