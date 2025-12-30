@@ -11,6 +11,14 @@ function Game:update(dt)
   BalatroTime.update(dt)
 end
 
+-- Adding custom textures
+SMODS.Atlas {  
+    key = 'custom_seals',  
+    path = 'custom_seals.png',  
+    px = 71,  -- Base sprite size (1x)  
+    py = 95,  -- Base sprite size (1x)  
+}
+
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
