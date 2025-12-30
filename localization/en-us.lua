@@ -48,6 +48,61 @@ return {
           "is added to the shop"
         }
       },
+      j_robin_hood = {  
+        name = "Robin Hood",  
+        text = {  
+          "Converts {C:attention}#1#%{} of chips to Mult",  
+          "Gains {C:attention}#3#%{} per {C:attention}#2#{} seconds",  
+          "in current round"  
+        }  
+      },
+      j_extinguisher = {
+        name = "Extinguisher",
+        text = {
+          "Stops decay on all",
+          "{C:attention}Fire{} enhanced cards"
+        }
+      },  
+      j_fuse = {  
+        name = "Fuse",  
+        text = {  
+          "In {C:attention}#1#{} seconds,",  
+          "destroys {C:attention}#2#{} random",  
+          "cards from hand, then",  
+          "destroys itself"  
+        }  
+      },
+      j_sundial = {
+        name = "Sundial",
+        text = {
+          "Retriggers cards with {C:attention} rank{}",
+          "equal to the {C:attention} leading digit{} on the clock",
+          "{C:attention}#1#{} times"
+
+        }
+      },
+      j_wormhole = {  
+        name = "Wormhole",  
+        text = {  
+          "If time is less than {C:attention}#1#{} seconds,",  
+          "fills consumable slots with",  
+          "planet cards for played hand"  
+        }
+      },
+      j_fertilizer = {
+        name = "Fertilizer",
+        text = {
+          "Gain {C:attention}#1#{} interest cap",
+          "{C:inactive} increases by 1 every minute{}"
+        }
+      },
+      j_angel = {
+        name = "Angel",
+        text = {
+          "Creates a {C:spectral}Pendulum{} card",
+          "if hand played with {C:attention}3 3s{} on the clock"
+        }
+      },
       j_chronos = {  
         name = "Chronos",  
         text = {  
@@ -96,11 +151,10 @@ return {
       c_pendulum = {
         name = "Pendulum",
         text = {
-          "Select 2 cards, ",
+          "Select {C:attention}2{} cards, ",
           "they randomly get a",
-          "{G.C.green}Green Seal{} or {HEX(FF69B4)}Pink Seal{}}"
+          "{C:green}Green Seal{} or {HEX(ff69b4)}Pink Seal{}"
         }
-
       }
     },
     Stake = {  

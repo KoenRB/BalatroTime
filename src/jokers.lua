@@ -120,8 +120,7 @@ SMODS.Joker {
     local bought_at = card.ability.extra.bought_at or 0
     card.ability.time_left = 60 - math.floor(now - bought_at)
     if card.ability.time_left <= 0 then
-      G.jokers:remove_card(self)
-			card:remove()
+      SMODS.destroy_cards(card, nil, nil, true)
     end
   end,
 
@@ -177,13 +176,300 @@ SMODS.Joker {
 }
 
 ---- Uncommon Jokers
--- Extinguisher: stops fire enhancement decay while in deck
+-- Extinguisher: TODO when new fire cards are added, extinguish them too
+SMODS.Joker {  
+  key = "extinguisher",  
+  pos = {x=0, y=0},  
+  rarity = 2,  
+  cost = 6,  
+  blueprint_compat = false,  
+  discovered = true,  
+  config = {extra = {}},  
+  loc_vars = function(self, info_queue, card)  
+    return { vars = {} }  
+  end,  
+  add_to_deck = function(self, card, from_debuff)  
+    -- Pause fire enhancement decay for all cards  
+    local areas = {G.deck, G.hand}  
+    for _, area in ipairs(areas) do  
+      if area and area.cards then  
+        for _, playing_card in ipairs(area.cards) do  
+          if playing_card.config.center.key == 'm_fire' then  
+            playing_card.ability.extra.paused = true  
+          end  
+        end  
+      end  
+    end  
+  end,  
+  remove_from_deck = function(self, card, from_debuff)  
+    -- Unpause fire enhancement decay for all cards  
+    local areas = {G.deck, G.hand}  
+    for _, area in ipairs(areas) do  
+      if area and area.cards then  
+        for _, playing_card in ipairs(area.cards) do  
+          if playing_card.config.center.key == 'm_fire' then  
+            playing_card.ability.extra.paused = false  
+            playing_card.ability.extra.last_updated = BalatroTime.clock  
+          end  
+        end  
+      end  
+    end  
+  end,  
+  calculate = function(self, card, context)  
+    if context.joker_main then  
+      return {  
+        message = "Fire Extinguished!",  
+        colour = G.C.BLUE  
+      }  
+    end  
+  end  
+}
 
--- Robin Hood Joker: moves x% of chips to mult, scales by 1% per 10sec in round
+SMODS.Joker {    
+  key = "robin_hood",    
+  pos = {x=0, y=0},    
+  rarity = 2,  
+  cost = 6,  
+  blueprint_compat = true,  
+  discovered = true,  
+  config = {  
+    extra = {    
+      base_percent = 0,  
+      scaling_percent = 0.01,    
+      scaling_time = 10,    
+      round_start_time = 0    
+    }    
+  },    
+  add_to_deck = function(self, card, from_debuff)  
+    -- Initialize time once when joker is added  
+    card.ability.extra.round_start_time = BalatroTime.clock or 0  
+  end,  
+  calculate = function(self, card, context)  
+    -- Reset timer at start of each round  
+    if context.setting_blind then  
+      card.ability.extra.round_start_time = BalatroTime.clock or 0  
+      return  
+    end  
+      
+    -- Main effect: convert chips to mult    
+    if context.joker_main then    
+      local elapsed = (BalatroTime.clock or 0) - (card.ability.extra.round_start_time or 0)    
+      local current_percent = card.ability.extra.base_percent + (math.floor(elapsed / card.ability.extra.scaling_time) * card.ability.extra.scaling_percent)    
+          
+      if current_percent > 0 and hand_chips > 0 then    
+        local chips_to_convert = math.floor(hand_chips * current_percent)    
+        local mult_gained = math.floor(chips_to_convert)    
+            
+        return {    
+          chips = -chips_to_convert,    
+          mult = mult_gained    
+        }    
+      end    
+    end    
+  end,  
+  loc_vars = function(self, info_queue, card)    
+    local elapsed = (BalatroTime.clock or 0) - (card.ability.extra.round_start_time or 0)    
+    local current_percent = card.ability.extra.base_percent + (math.floor(elapsed / card.ability.extra.scaling_time) * card.ability.extra.scaling_percent)    
+    return { vars = {     
+      math.floor(current_percent * 100),     
+      card.ability.extra.scaling_time,    
+      math.floor(card.ability.extra.scaling_percent * 100)    
+    }}      
+  end  
+}
 
--- Fuse Joker: adds fire enhancement to 5 random cards in hand in 3min, destroys itself after
+-- Fuse Joker: destroys up to 5 random cards in hand in 3min, destroys itself after
+SMODS.Joker {  
+  key = "fuse",  
+  pos = {x=0, y=0},  
+  rarity = 2,  
+  cost = 6,  
+  blueprint_compat = false,  
+  discovered = true,  
+  config = {  
+    extra = {  
+      bought_at = 0,  
+      destroy_time = 180,  
+      destroy_count = 5,  
+    }  
+  },  
+  loc_vars = function(self, info_queue, card)  
+    -- Calculate time remaining  
+    local time_elapsed = BalatroTime.clock - card.ability.extra.bought_at  
+    local time_left = math.max(0, card.ability.extra.destroy_time - time_elapsed)  
+      
+    return {vars = {  
+      time_left,  -- #1#: Time remaining until trigger  
+      card.ability.extra.destroy_count  -- #2#: Cards to destroy  
+    }}  
+  end,  
+  add_to_deck = function(self, card, from_debuff)  
+    card.ability.extra.bought_at = BalatroTime.clock  
+  end,  
+  calculate = function(self, card, context)  
+    if (not context.joker_main) then  
+      if BalatroTime.clock - card.ability.extra.bought_at >= card.ability.extra.destroy_time then  
+        if #G.hand.cards > 0 then  
+          delay(0.2)  
+          local destroyed_cards = {}  
+          local destroyed_count = card.ability.extra.destroy_count  
+          local temp_hand = {}  
+  
+          for _, playing_card in ipairs(G.hand.cards) do temp_hand[#temp_hand + 1] = playing_card end  
+            table.sort(temp_hand,  
+              function(a, b)  
+              return not a.playing_card or not b.playing_card or a.playing_card < b.playing_card  
+            end  
+          )  
+  
+          pseudoshuffle(temp_hand, 'immolate')  
+            
+          if destroyed_count > #G.hand.cards then  
+            destroyed_count =  #G.hand.cards  
+          end  
+  
+          for i = 1, destroyed_count do destroyed_cards[#destroyed_cards + 1] = temp_hand[i] end  
+  
+          G.E_MANAGER:add_event(Event({  
+              trigger = 'after',  
+              delay = 0.4,  
+              func = function()  
+                  play_sound('tarot1')  
+                  card:juice_up(0.3, 0.5)  
+                  return true  
+              end  
+          }))  
+          SMODS.destroy_cards(destroyed_cards)  
+          -- Add delay before joker destruction    
+          G.E_MANAGER:add_event(Event({    
+              trigger = 'after',    
+              delay = 0.3,    
+              func = function()    
+                SMODS.destroy_cards(card, nil, nil, true)    
+                return true    
+              end   
+            })  
+          )  
+        end  
+      end  
+    end  
+  end  
+}
+
 -- Sundial Joker: retriggers cards with the rank equal to the leading digit of the current time twice upon scoring
--- Supernova Joker: if time is less than 15 seconds, fills consumable slots with planet cards for played hand
+SMODS.Joker {  
+  key = "sundial",  
+  pos = {x=0, y=0},  
+  rarity = 2,  
+  cost = 6,  
+  blueprint_compat = true,  
+  discovered = true,  
+  config = {  
+    extra = {  
+      retriggers = 2,  
+    }  
+  },  
+  loc_vars = function(self, info_queue, card)  
+    return {vars = {card.ability.extra.retriggers}}  
+  end,  
+  calculate = function(self, card, context)  
+    if context.joker_main then  
+      -- Get current time string using Balatro's time system  
+      local time_string = BalatroTime.format_time(BalatroTime.clock)  
+      local leading_digit  
+        
+      -- Extract first non-zero, non-colon digit  
+      for char in time_string:gmatch(".") do    
+          if char ~= "0" and char ~= ":" then    
+              leading_digit = tonumber(char)    
+              break    
+          end    
+      end  
+        
+      -- Apply retriggers to selected cards if we found a digit  
+      if leading_digit and G.hand.selected and #G.hand.selected > 0 then  
+        return {  
+          retriggers = {  
+            {  
+              message = localize('k_again_ex'),  
+              repetitions = card.ability.extra.retriggers,  
+              card = card  
+            }  
+          }  
+        }  
+      end  
+    end  
+  end  
+}
+
+-- -- Supernova test
+-- SMODS.Joker {
+--   key = "supernova2",
+--   pos = { x=0, y=0 },
+--   cost = 6,
+--   rarity = 2
+-- }
+
+
+-- Wormhole Joker: if time is less than 15 seconds, fills consumable slots with planet cards for played hand
+SMODS.Joker {  
+  key = "wormhole",  
+  pos = { x=0, y=0 },  
+  cost = 6,  
+  rarity = 2,  
+  blueprint_compat = true,  
+  discovered = true,  
+  config = {  
+    extra = {  
+      time_threshold = 15,  
+    }  
+  },  
+  loc_vars = function(self, info_queue, card)  
+    return {vars = {card.ability.extra.time_threshold}}  
+  end,  
+  calculate = function(self, card, context)  
+    if context.playing_card_end_of_round and context.cardarea == G.hand and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then  
+      -- Check if time is below threshold  
+      if BalatroTime.clock < card.ability.extra.time_threshold and G.GAME.last_hand_played then  
+        G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1  
+        G.E_MANAGER:add_event(Event({  
+          trigger = 'before',  
+          delay = 0.0,  
+          func = function()  
+            -- Find planet cards for the played hand  
+            local planets_for_hand = {}  
+            for _, planet in pairs(G.P_CENTER_POOLS.Planet) do  
+              if planet.config.hand_type == G.GAME.last_hand_played then  
+                table.insert(planets_for_hand, planet)  
+              end  
+            end  
+              
+            -- Fill available consumable slots  
+            local slots_filled = 0  
+            local max_slots = G.consumeables.config.card_limit - #G.consumeables.cards  
+              
+            if #planets_for_hand > 0 and max_slots > 0 then  
+              for i = 1, math.min(max_slots, #planets_for_hand) do  
+                local planet_card = create_card('Planet', G.consumeables, nil, nil, nil, nil, planets_for_hand[i].key)  
+                planet_card:add_to_deck()  
+                slots_filled = slots_filled + 1  
+              end  
+                
+              if slots_filled > 0 then  
+                card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type='variable', key='a_slots', vars={slots_filled}}})  
+                play_sound('tarot1')  
+                card:juice_up(0.3, 0.5)  
+              end  
+            end  
+            G.GAME.consumeable_buffer = 0  
+            return true  
+          end  
+        }))  
+        return { message = localize('k_plus_planet'), colour = G.C.SECONDARY_SET.Planet }  
+      end
+    end
+  end
+}
 
 -- Engineer Joker
 SMODS.Joker {    
@@ -216,16 +502,91 @@ SMODS.Joker {
   end   
 }
 
----- Rare Jokers
--- Fertilizer Joker: raises interest cap by 1 for every minute played this run
+SMODS.Joker {  
+  key = "fertilizer",  
+  pos = {x=0, y=0},  
+  rarity = 3,  
+  cost = 8,  
+  blueprint_compat = false,  
+  discovered = true,  
+  config = {extra = {last_upgraded = 0, cap_increase = 0}},  
+  loc_vars = function(self, info_queue, card)      
+    return { vars = { card.ability.extra.cap_increase } }      
+  end,  
+  add_to_deck = function(self, card, from_debuff)  
+    card.ability.extra.last_upgraded = (BalatroTime.clock or 0)  
+  end,  
+  remove_from_deck = function(self, card, from_debuff)  
+    G.GAME.interest_cap = (G.GAME.interest_cap or 25) - (5 * card.ability.extra.cap_increase)  
+    card_eval_status_text(card, 'extra', nil, nil, nil, {message = "-" .. card.ability.extra.cap_increase .. " interest cap", colour = G.C.RED})
+  end,
+  update = function(self, card, dt)
+    if BalatroTime.clock - card.ability.extra.last_upgraded >= 60 then
+      G.GAME.interest_cap = G.GAME.interest_cap + 5
+      card.ability.extra.last_upgraded = BalatroTime.clock
+      card.ability.extra.cap_increase = card.ability.extra.cap_increase + 1
+    end
+  end
+}
 -- Angel Joker: if the current time contains 3 3s, create a prendulum spectral card
+SMODS.Joker {  
+  key = "angel",  
+  pos = {x=0, y=0},  
+  rarity = 3,  
+  cost = 10,  
+  blueprint_compat = false,  
+  discovered = true,  
+  config = {extra = {}},
+  loc_vars = function(self, info_queue, card)  
+    return { vars = {} }  
+  end,  
+  calculate = function(self, card, context)  
+    if context.joker_main then  
+      local time_string = BalatroTime.format_time(BalatroTime.clock or 0)  
+        
+      -- Count all occurrences of "3" in the time string  
+      local count_3s = 0  
+      for char in time_string:gmatch(".") do  
+        if char == "3" then  
+          count_3s = count_3s + 1  
+        end  
+      end  
+        
+      if count_3s >= 3 then 
+        -- Create Pendulum spectral card  
+        G.E_MANAGER:add_event(Event({  
+          trigger = 'after',  
+          delay = 0.4,  
+          func = function()  
+            if #G.consumeables.cards >= G.consumeables.config.card_limit then  
+              return false  -- No space available  
+            end 
+            local spectral_card = SMODS.create_card({  
+              key = "c_pendulum",  
+              area = G.consumeables  
+            })  
+            spectral_card:add_to_deck()  
+            G.consumeables:emplace(spectral_card)  
+            return true  
+          end  
+        }))  
+          
+        return {  
+          message = "Pendulum!",  
+          colour = G.C.SPECTRAL  
+        }  
+      end  
+    end  
+  end  
+}
+
 
 -- Freeze Joker
 SMODS.Joker {
   key="freeze",
   pos={x=0,y=0},
   rarity=3,
-  cost = 6,
+  cost = 8,
   blueprint_compat=false,
   discovered=true,
   config = { extra = { } },

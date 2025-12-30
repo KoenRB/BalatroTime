@@ -35,7 +35,24 @@ local function add_mod_cards_to_deck()
   local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_engineer', 'engineer')
   c:add_to_deck()
   G.jokers:emplace(c)
+
   local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_engineer', 'engineer')
+  c:add_to_deck()
+  G.jokers:emplace(c)
+  
+  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_fertilizer', 'fertilizer')
+  c:add_to_deck()
+  G.jokers:emplace(c)
+  
+  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_angel', 'angel')
+  c:add_to_deck()
+  G.jokers:emplace(c)
+
+  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_robin_hood', 'robin_hood')
+  c:add_to_deck()
+  G.jokers:emplace(c)
+
+  local c = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_extinguisher', 'extinguisher')
   c:add_to_deck()
   G.jokers:emplace(c)
 
@@ -105,7 +122,6 @@ function CardArea:align_cards()
             -- Check if both cards have blessed stickers  
             local a_blessed = a.ability.blessed  
             local b_blessed = b.ability.blessed  
-              
             if a_blessed and b_blessed then  
                 local a_xmult = a_blessed.xmult or 0  
                 local b_xmult = b_blessed.xmult or 0  
@@ -113,7 +129,6 @@ function CardArea:align_cards()
                     return a_xmult < b_xmult  -- Lower xmult first (left side)  
                 end  
             end  
-              
             -- Default positioning  
             return a.T.x + a.T.w/2 < b.T.x + b.T.w/2  
         end)  

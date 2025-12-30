@@ -184,7 +184,7 @@ This mod is designed as a **systemic expansion**, not just a Joker pack.
 
 
 - <details>
-  <summary>Supernova</summary>
+  <summary>Wormhole</summary>
   
   - if time on clock is less than 15 sec
   - fills consumable slots with planet card for played hand
