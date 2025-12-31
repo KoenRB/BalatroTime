@@ -62,11 +62,9 @@ SMODS.Seal {
             -- Update per-card state  
             card.ability.seal.current_leading_digit = leading_digit  
             card.ability.seal.current_rank = new_rank  
-              
-            return {    
-                message = new_rank,    
-                colour = HEX("FF69B4")    
-            }  
+            
+             -- Add card shake effect  
+            card:juice_up(0.3, 0.5)     
         end  
           
         return nil  

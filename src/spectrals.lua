@@ -2,8 +2,9 @@
 SMODS.Consumable {  
     key = "pendulum",  
     set = "Spectral",  
-    pos = {x = 1, y = 5},  
-    config = { max_highlighted = 2 },  
+    atlas = "pendulum",
+    pos = {x = 0, y = 0},  
+    config = { max_highlighted = 2 }, 
   
     use = function(self, card, area, copier)  
         local used_tarot = copier or card  

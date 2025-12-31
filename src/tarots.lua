@@ -3,6 +3,7 @@ SMODS.Consumable {
     -- creates a tarot that adds the fire enhancement to 2 selected cards
     key = 'pyre',
     set = 'Tarot',
+    atlas = 'pyre',
     pos = { x = 0, y = 0 },
     config = { max_highlighted = 2, mod_conv = m_fire },
     loc_vars = function(self, info_queue, card)
@@ -69,3 +70,46 @@ SMODS.Consumable {
         return G.hand and #G.hand.highlighted > 0 and #G.hand.highlighted <= card.ability.max_highlighted
     end
 }
+
+
+-- testing for someone else
+-- SMODS.Consumable {
+--     key = 'hangedprint',
+--     set = "Tarot",
+--     pos = { x = 2, y = 1 },
+--     config = { max_highlighted = 2, extra = {odds = 2} },
+--     loc_vars = function(self, info_queue, card)
+--         local n, d = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'withering_chance')
+--         return { vars = { card.ability.max_highlighted, n, d } }
+--     end,
+--     use = function(self, card, area, copier)
+--         local targets = G.hand.highlighted
+--         G.E_MANAGER:add_event(Event({
+--             trigger = 'after',
+--             delay = 0.4,
+--             func = function()
+--                 play_sound('tarot1')
+--                 card:juice_up(0.3, 0.5)
+
+--                 for i = 1, #targets do
+--                     local c = targets[i]
+
+--                     c.debuff = true
+--                     c:juice_up(0.25, 0.3)
+
+--                     if SMODS.pseudorandom_probability(
+--                         card,
+--                         'geekedupplayingbalatroallday' .. i,
+--                         1,
+--                         card.ability.odds
+--                     ) then
+--                         c.ability.repetitions = (c.ability.repetitions or 0) + 1
+--                         play_sound('bd_inapmit', 1, 0.7)
+--                     end
+--                 end
+--                 return true
+--             end
+--         }))
+--         delay(0.6)
+--     end
+-- }

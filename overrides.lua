@@ -18,6 +18,18 @@ SMODS.Atlas {
     px = 71,  -- Base sprite size (1x)  
     py = 95,  -- Base sprite size (1x)  
 }
+SMODS.Atlas {  
+    key = 'pyre',  
+    path = 'pyre.png',  
+    px = 71,  -- Base sprite size (1x)  
+    py = 95,  -- Base sprite size (1x)  
+}
+SMODS.Atlas {
+  key = "pendulum",
+  path = 'pendulum.png',
+  px = 71,  -- Base sprite size (1x)  
+  py = 95,  -- Base sprite size (1x)  
+}
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
