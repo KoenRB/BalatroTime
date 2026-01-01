@@ -608,18 +608,22 @@ SMODS.Joker {
 -- Chronos Joker: scales by 0.1 xmult per minute from being bought, adds blessed sticker to the joker on its right
 SMODS.Joker {  
   key = "chronos",  
+  atlas = "chronos",
   pos = {x=0,y=0},  
+  soul_pos = {x=1, y=0},
   rarity=4,  
   cost = 20,  
   blueprint_compat = true,  
-  discovered = false,  
+  discovered = true,  
   config = {extra = {xmult = 1.0, scaling = 0.1, scaling_time = 30, bought_at = 0, blessing_cd = 60, last_blessing = 0}},  
   loc_vars = function(self, info_queue, card)  
     return { vars = {card.ability.extra.xmult, card.ability.extra.scaling, card.ability.extra.scaling_time}}  
   end,  
-  add_to_deck = function(self, card, from_debuff)  
-    card.ability.extra.bought_at = BalatroTime.clock  
-    card.ability.extra.last_blessing = BalatroTime.clock  
+  add_to_deck = function(self, card, from_debuff)
+    if not card.ability.extra.bought_at then
+      card.ability.extra.bought_at = BalatroTime.clock  
+      card.ability.extra.last_blessing = BalatroTime.clock 
+    end 
   end,  
   update = function(self, card, dt)  
     local now = (BalatroTime and BalatroTime.clock) or 0  

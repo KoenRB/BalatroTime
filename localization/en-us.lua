@@ -188,7 +188,7 @@ return {
         name = "Blessed",
         text = {
           "Card is {HEX(ADD8E6)}Blessed{}",
-          "{C:mult}#1#x{}, gains 0.1 per min",
+          "{X:mult,C:white}X#1#{}, gains 0.1 per min",
           "{C:inactive}capped at 5x{}"
         }
       }
