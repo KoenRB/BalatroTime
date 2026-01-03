@@ -31,8 +31,20 @@ SMODS.Atlas {
   py = 95,  -- Base sprite size (1x)  
 }
 SMODS.Atlas {
-  key = "chronos",
-  path = 'chronos.png',
+  key = "jokers",
+  path = 'jokers.png',
+  px = 71,  -- Base sprite size (1x)  
+  py = 95,  -- Base sprite size (1x)  
+}
+SMODS.Atlas {
+  key = "vouchers",
+  path = 'vouchers.png',
+  px = 71,  -- Base sprite size (1x)  
+  py = 95,  -- Base sprite size (1x)  
+}
+SMODS.Atlas {
+  key = "burned",
+  path = 'burned.png',
   px = 71,  -- Base sprite size (1x)  
   py = 95,  -- Base sprite size (1x)  
 }

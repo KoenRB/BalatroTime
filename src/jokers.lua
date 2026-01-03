@@ -17,7 +17,8 @@ end
 
 SMODS.Joker {
   key="hourglass",
-  pos={x=0,y=0},
+  atlas = "jokers",
+  pos={x=3,y=0},
   rarity=1,
   cost=3,
   blueprint_compat=false,
@@ -51,7 +52,8 @@ SMODS.Joker {
 
 SMODS.Joker {
   key="rust",
-  pos={x=0,y=0},
+  atlas = "jokers",
+  pos={x=4,y=0},
   rarity=1,
   cost=3,
   blueprint_compat=true,
@@ -96,7 +98,8 @@ SMODS.Joker {
 -- Alarm Clock Joker
 SMODS.Joker {
   key="alarm_clock",
-  pos={x=0,y=0},
+  atlas = "jokers",
+  pos={x=5,y=0},
   rarity=1,
   cost=5,
   blueprint_compat=true,
@@ -179,7 +182,8 @@ SMODS.Joker {
 -- Extinguisher: TODO when new fire cards are added, extinguish them too
 SMODS.Joker {  
   key = "extinguisher",  
-  pos = {x=0, y=0},  
+  atlas = "jokers",
+  pos = {x=2, y=0},  
   rarity = 2,  
   cost = 6,  
   blueprint_compat = false,  
@@ -373,33 +377,29 @@ SMODS.Joker {
     return {vars = {card.ability.extra.retriggers}}  
   end,  
   calculate = function(self, card, context)  
-    if context.joker_main then  
-      -- Get current time string using Balatro's time system  
-      local time_string = BalatroTime.format_time(BalatroTime.clock)  
-      local leading_digit  
-        
-      -- Extract first non-zero, non-colon digit  
-      for char in time_string:gmatch(".") do    
-          if char ~= "0" and char ~= ":" then    
-              leading_digit = tonumber(char)    
-              break    
-          end    
-      end  
-        
-      -- Apply retriggers to selected cards if we found a digit  
-      if leading_digit and G.hand.selected and #G.hand.selected > 0 then  
-        return {  
-          retriggers = {  
-            {  
-              message = localize('k_again_ex'),  
-              repetitions = card.ability.extra.retriggers,  
-              card = card  
+    if context.repetition and context.cardarea == G.play and context.other_card then  
+        -- Get leading digit of current time  
+        local time_string = BalatroTime.format_time(BalatroTime.clock)  
+        local leading_digit  
+        for char in time_string:gmatch(".") do  
+            if char ~= "0" and char ~= ":" then  
+                leading_digit = char  
+                break  
+            end  
+        end  
+          
+        -- Map digit to rank  
+        local rank_map = {["1"]="Ace", ["2"]="2", ["3"]="3", ["4"]="4", ["5"]="5", ["6"]="6", ["7"]="7", ["8"]="8", ["9"]="9", ["0"]="10"}  
+        local target_rank = rank_map[leading_digit] or "Ace"  
+          
+        -- Add repetitions to cards matching the leading digit  
+        if context.other_card.base.value == target_rank then  
+            return {  
+                repetitions = card.ability.extra.retriggers  
             }  
-          }  
-        }  
-      end  
+        end  
     end  
-  end  
+end
 }
 
 -- -- Supernova test
@@ -473,8 +473,9 @@ SMODS.Joker {
 
 -- Engineer Joker
 SMODS.Joker {    
-  key="engineer",    
-  pos={x=0,y=0},    
+  key="engineer",
+  atlas = "jokers",
+  pos={x=7,y=0},
   rarity=2,    
   cost = 6,    
   blueprint_compat=false,    
@@ -584,7 +585,8 @@ SMODS.Joker {
 -- Freeze Joker
 SMODS.Joker {
   key="freeze",
-  pos={x=0,y=0},
+  atlas = "jokers",
+  pos={x=6,y=0},
   rarity=3,
   cost = 8,
   blueprint_compat=false,
@@ -608,7 +610,7 @@ SMODS.Joker {
 -- Chronos Joker: scales by 0.1 xmult per minute from being bought, adds blessed sticker to the joker on its right
 SMODS.Joker {  
   key = "chronos",  
-  atlas = "chronos",
+  atlas = "jokers",
   pos = {x=0,y=0},  
   soul_pos = {x=1, y=0},
   rarity=4,  

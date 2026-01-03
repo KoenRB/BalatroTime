@@ -1,7 +1,8 @@
 -- Pendulum Deck
 SMODS.Back {  
     key = "pendulum",  
-    pos = { x = 0, y = 0 },  
+    atlas = "burned",
+    pos = { x = 0, y = 1 },  
     config = {  
         extra = {   
             consumables = {"c_pendulum", "c_pendulum"},   

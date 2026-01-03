@@ -39,6 +39,7 @@ SMODS.Consumable {
                 delay = 0.1,
                 func = function()
                     G.hand.highlighted[i]:set_ability(G.P_CENTERS.m_fire, nil, true)
+                    G.hand.highlighted[i].ability.extra.last_updated = (BalatroTime and BalatroTime.clock) or 0
                     return true
                 end
             }))

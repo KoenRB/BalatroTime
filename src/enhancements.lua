@@ -1,6 +1,7 @@
 SMODS.Enhancement {  
     key = 'fire',  
-    pos = { x = 3, y = 1 },  
+    atlas = "burned",
+    pos = { x = 0, y = 0 },  
     config = {   
         mult = 15,   
         extra = {   
@@ -10,7 +11,10 @@ SMODS.Enhancement {
             decay_val = 3,  
             paused = false
         }   
-    },  
+    },
+    loc_vars = function(self, info_queue, card)  
+        return { vars = { card.ability.mult, card.ability.extra.time_left } }  
+    end,
     update = function(self, card, dt)  
         -- Skip decay if paused  
         if card.ability.extra.paused then return end  

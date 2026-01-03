@@ -3,6 +3,7 @@ BalatroTime = BalatroTime or {}
 -- Hypersonic: allows changing speed to 2x
 SMODS.Voucher {
     key = 'hypersonic',
+    atlas = "vouchers",
     pos = { x = 0, y = 0 },
     config = { extra = { speed_options = { 1, 2 } } },
     loc_vars = function(self, info_queue, card)
@@ -17,7 +18,8 @@ SMODS.Voucher {
 -- Lightspeed: adds 4x speed option
 SMODS.Voucher {
     key = 'lightspeed',
-    pos = { x = 0, y = 0 },
+    atlas = "vouchers", 
+    pos = { x = 0, y = 1 },
     config = { extra = { speed_options = { 1, 2, 4 } } },
     requires = { 'v_hypersonic' },
     loc_vars = function(self, info_queue, card)
